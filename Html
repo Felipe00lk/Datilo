@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gerador de Currículos — Datilo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --desk: #1C2130;
+    --desk-2: #262C40;
+    --paper: #FBFAF5;
+    --paper-line: #E4E0D2;
+    --ink: #1C2541;
+    --ink-soft: #454B63;
+    --ribbon: #B33A3A;
+    --ribbon-dark: #8E2B2B;
+    --brass: #C9A44C;
+    --mono: 'IBM Plex Mono', monospace;
+    --type: 'Special Elite', cursive;
+    --serif: 'Lora', serif;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(circle at 15% 10%, rgba(255,255,255,0.03), transparent 40%),
+      var(--desk);
+    font-family: var(--mono);
+    color:#EDEAE0;
+    min-height:100vh;
+  }
+  .topbar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:22px 32px;
+    border-bottom:1px solid rgba(255,255,255,0.08);
+  }
+  .brand{
+    display:flex;
+    align-items:baseline;
+    gap:10px;
+  }
+  .brand .mark{
+    font-family:var(--type);
+    font-size:22px;
+    letter-spacing:1px;
+    color:var(--brass);
+  }
+  .brand .sub{
+    font-size:11px;
+    letter-spacing:3px;
+    text-transform:uppercase;
+    color:#8b8f9e;
+  }
+  .counter{
+    font-size:12px;
+    letter-spacing:1px;
+    color:#8b8f9e;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .counter b{
+    color:var(--brass);
+    font-weight:600;
+  }
+ 
+  /* ---------- AD SLOTS ---------- */
+  /*
+    Onde colocar o Google AdSense de verdade:
+    1) Cadastre-se em https://www.google.com/adsense e adicione o site.
+    2) Cole o script de verificação do AdSense dentro de <head> (acima de </head>).
+    3) Publique um arquivo /ads.txt na raiz do domínio (o AdSense te dá o conteúdo).
+    4) Troque cada <div class="ad-slot">...</div> abaixo pelo bloco <ins class="adsbygoogle">
+       que o AdSense fornece para aquele espaço (banner, retângulo, etc).
+    Os slots abaixo já reservam o espaço certo e ficam ocultos na impressão/PDF.
+  */
+  .ad-slot{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    background:repeating-linear-gradient(45deg, #232838, #232838 10px, #262c40 10px, #262c40 20px);
+    border:1px dashed rgba(255,255,255,0.18);
+    color:#6b7185;
+    font-family:var(--mono);
+    font-size:10.5px;
+    letter-spacing:1px;
+    text-transform:uppercase;
+    border-radius:4px;
+  }
+  .ad-slot span{opacity:.85;}
+  .ad-slot small{
+    display:block;
+    font-size:9px;
+    letter-spacing:.5px;
+    text-transform:none;
+    margin-top:4px;
+    opacity:.6;
+  }
+  .ad-slot--leaderboard{
+    width:100%;
+    height:90px;
+    margin:0 0 0;
+  }
+  .ad-slot--rect{
+    width:100%;
+    height:250px;
+    margin:26px 0;
+  }
+  .ad-slot--inline{
+    width:100%;
+    height:120px;
+    margin:24px 0;
+  }
+ 
+  .layout{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap:0;
+    align-items:start;
+  }
+  @media (max-width:980px){
+    .layout{grid-template-columns:1fr;}
+  }
+ 
+  /* ---------- FORM SIDE ---------- */
+  .form-side{
+    padding:0 40px 100px;
+    max-height:100vh;
+    overflow-y:auto;
+  }
+  .form-side-inner{padding-top:24px;}
+  .section-title{
+    font-family:var(--type);
+    font-size:15px;
+    color:var(--brass);
+    letter-spacing:1px;
+    margin:34px 0 14px;
+    padding-bottom:8px;
+    border-bottom:1px dashed rgba(255,255,255,0.15);
+  }
+  .section-title:first-child{margin-top:0;}
+  label{
+    display:block;
+    font-size:10.5px;
+    letter-spacing:1.5px;
+    text-transform:uppercase;
+    color:#8b8f9e;
+    margin-bottom:6px;
+  }
+  .field{margin-bottom:16px;}
+  .row2{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:14px;
+  }
+  input[type=text], input[type=email], input[type=tel], textarea{
+    width:100%;
+    background:var(--desk-2);
+    border:none;
+    border-bottom:2px solid rgba(255,255,255,0.12);
+    color:#F2F0E8;
+    font-family:var(--mono);
+    font-size:14px;
+    padding:10px 4px;
+    outline:none;
+    transition:border-color .15s ease, background .15s ease;
+    border-radius:2px 2px 0 0;
+  }
+  input::placeholder, textarea::placeholder{color:#5a5f70;}
+  input:focus, textarea:focus{
+    border-bottom-color:var(--ribbon);
+    background:#2c3348;
+  }
+  textarea{resize:vertical; min-height:70px; line-height:1.5;}
+ 
+  .entry-card{
+    background:rgba(255,255,255,0.03);
+    border:1px solid rgba(255,255,255,0.08);
+    border-radius:6px;
+    padding:16px 16px 4px;
+    margin-bottom:14px;
+    position:relative;
+  }
+  .entry-remove{
+    position:absolute;
+    top:10px;
+    right:10px;
+    background:none;
+    border:none;
+    color:#8b8f9e;
+    font-size:16px;
+    cursor:pointer;
+    line-height:1;
+    padding:4px;
+  }
+  .entry-remove:hover{color:var(--ribbon);}
+ 
+  .key-btn{
+    font-family:var(--mono);
+    font-size:12.5px;
+    letter-spacing:1px;
+    text-transform:uppercase;
+    color:#EDEAE0;
+    background:var(--desk-2);
+    border:1px solid rgba(255,255,255,0.15);
+    border-radius:20px;
+    padding:10px 18px;
+    cursor:pointer;
+    transition:transform .12s ease, border-color .12s ease, background .12s ease;
+  }
+  .key-btn:hover{
+    border-color:var(--brass);
+    background:#323a55;
+    transform:translateY(-1px);
+  }
+  .key-btn:active{transform:translateY(1px);}
+  .key-btn.add{width:100%; margin-top:2px; margin-bottom:6px;}
+ 
+  .skills-hint{font-size:11px; color:#5a5f70; margin-top:-8px; margin-bottom:16px;}
+ 
+  /* ---------- TEMPLATE PICKER ---------- */
+  .tpl-picker{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-bottom:22px;
+    width:100%;
+    max-width:620px;
+  }
+  .tpl-btn{
+    flex:1 1 auto;
+    min-width:130px;
+    background:var(--desk-2);
+    border:1px solid rgba(255,255,255,0.15);
+    border-radius:8px;
+    padding:10px 12px;
+    cursor:pointer;
+    text-align:left;
+    color:#EDEAE0;
+    transition:border-color .15s ease, background .15s ease;
+  }
+  .tpl-btn b{
+    display:block;
+    font-family:var(--mono);
+    font-size:12px;
+    letter-spacing:.5px;
+  }
+  .tpl-btn span{
+    display:block;
+    font-size:10px;
+    color:#8b8f9e;
+    margin-top:2px;
+  }
+  .tpl-btn:hover{border-color:var(--brass);}
+  .tpl-btn.active{
+    border-color:var(--brass);
+    background:#323a55;
+    box-shadow: inset 0 0 0 1px var(--brass);
+  }
+ 
+  /* ---------- PREVIEW SIDE ---------- */
+  .preview-side{
+    background: linear-gradient(180deg, #14182380, transparent 200px), var(--desk);
+    padding:32px 44px 48px;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    position:sticky;
+    top:0;
+  }
+  .paper-wrap{
+    perspective:1400px;
+    width:100%;
+    max-width:620px;
+  }
+  #paper{
+    width:100%;
+    min-height:820px;
+    background:var(--paper);
+    box-shadow: 0 30px 60px -20px rgba(0,0,0,0.6), 0 2px 0 rgba(0,0,0,0.2);
+    color:var(--ink);
+    transform:rotate(-0.6deg);
+    transition:transform .3s ease;
+    overflow:hidden;
+  }
+  .paper-wrap:hover #paper{transform:rotate(0deg);}
+ 
+  /* shared preview building blocks */
+  #paper .r-empty{
+    color:#B7B2A0;
+    font-size:13px;
+    font-style:italic;
+  }
+ 
+  /* === TEMPLATE 1: Datilo (typewriter) === */
+  #paper.tpl-typewriter{
+    padding:52px 50px;
+    font-family:var(--serif);
+  }
+  .tpl-typewriter .r-name{
+    font-family:var(--type);
+    font-size:30px;
+    margin:0 0 2px;
+    letter-spacing:0.5px;
+  }
+  .tpl-typewriter .r-role{
+    font-size:14px;
+    color:var(--ribbon);
+    text-transform:uppercase;
+    letter-spacing:2px;
+    margin-bottom:14px;
+    font-family:var(--mono);
+    font-weight:600;
+  }
+  .tpl-typewriter .r-contact{
+    font-size:12px;
+    color:var(--ink-soft);
+    font-family:var(--mono);
+    display:flex;
+    flex-wrap:wrap;
+    gap:4px 14px;
+    padding-bottom:16px;
+    border-bottom:2px solid var(--ink);
+    margin-bottom:20px;
+  }
+  .tpl-typewriter h2{
+    font-family:var(--mono);
+    font-size:11.5px;
+    letter-spacing:2.5px;
+    text-transform:uppercase;
+    color:var(--ribbon);
+    border-bottom:1px solid var(--paper-line);
+    padding-bottom:6px;
+    margin:22px 0 12px;
+  }
+  .tpl-typewriter h2:first-of-type{margin-top:0;}
+  .tpl-typewriter .r-summary{font-size:14px; line-height:1.65; color:var(--ink-soft); font-style:italic;}
+  .tpl-typewriter .r-item{margin-bottom:14px;}
+  .tpl-typewriter .r-item-head{display:flex; justify-content:space-between; align-items:baseline; gap:10px;}
+  .tpl-typewriter .r-item-title{font-weight:600; font-size:14.5px;}
+  .tpl-typewriter .r-item-period{font-family:var(--mono); font-size:11px; color:var(--ink-soft); white-space:nowrap;}
+  .tpl-typewriter .r-item-sub{font-size:12.5px; color:var(--ribbon-dark); margin-bottom:4px; font-family:var(--mono);}
+  .tpl-typewriter .r-item-desc{font-size:13px; line-height:1.55; color:var(--ink-soft);}
+  .tpl-typewriter .r-skills{display:flex; flex-wrap:wrap; gap:8px;}
+  .tpl-typewriter .r-skill{font-family:var(--mono); font-size:11px; border:1px solid var(--ink); padding:3px 10px; border-radius:2px;}
+ 
+  /* === TEMPLATE 2: Clássico === */
+  #paper.tpl-classico{
+    padding:56px 60px;
+    font-family:'Libre Baskerville', serif;
+    color:#111;
+  }
+  .tpl-classico .r-name{
+    text-align:center;
+    font-size:26px;
+    letter-spacing:3px;
+    text-transform:uppercase;
+    margin:0 0 6px;
+  }
+  .tpl-classico .r-role{
+    text-align:center;
+    font-size:13px;
+    letter-spacing:2px;
+    text-transform:uppercase;
+    color:#555;
+    margin-bottom:12px;
+  }
+  .tpl-classico .r-contact{
+    text-align:center;
+    font-size:11.5px;
+    color:#444;
+    display:flex;
+    justify-content:center;
+    flex-wrap:wrap;
+    gap:4px 12px;
+    padding-bottom:14px;
+    margin-bottom:22px;
+    position:relative;
+  }
+  .tpl-classico .r-contact::after{
+    content:"";
+    position:absolute;
+    bottom:0; left:50%;
+    transform:translateX(-50%);
+    width:60px;
+    border-bottom:1px solid #111;
+  }
+  .tpl-classico h2{
+    font-size:12.5px;
+    letter-spacing:3px;
+    text-transform:uppercase;
+    text-align:center;
+    margin:24px 0 14px;
+    color:#111;
+  }
+  .tpl-classico h2:first-of-type{margin-top:0;}
+  .tpl-classico .r-summary{font-size:13.5px; line-height:1.7; text-align:center; color:#333; max-width:480px; margin:0 auto;}
+  .tpl-classico .r-item{margin-bottom:14px; text-align:center;}
+  .tpl-classico .r-item-head{display:flex; justify-content:center; gap:10px; align-items:baseline; flex-wrap:wrap;}
+  .tpl-classico .r-item-title{font-weight:700; font-size:13.5px;}
+  .tpl-classico .r-item-period{font-size:11px; color:#555; font-style:italic;}
+  .tpl-classico .r-item-sub{font-size:12px; color:#555; font-style:italic; margin-bottom:4px;}
+  .tpl-classico .r-item-desc{font-size:12.5px; line-height:1.6; color:#333; max-width:480px; margin:0 auto;}
+  .tpl-classico .r-skills{display:flex; justify-content:center; flex-wrap:wrap; gap:6px 10px; font-size:12.5px; color:#333;}
+  .tpl-classico .r-skill::after{content:"•"; margin-left:10px; color:#999;}
+  .tpl-classico .r-skill:last-child::after{content:"";}
+ 
+  /* === TEMPLATE 3: Moderno (duas colunas) === */
+  #paper.tpl-moderno{
+    display:grid;
+    grid-template-columns:210px 1fr;
+    font-family:'Inter', sans-serif;
+    min-height:820px;
+  }
+  .tpl-moderno .r-side{
+    background:#1E2A4A;
+    color:#F2F4F8;
+    padding:40px 24px;
+  }
+  .tpl-moderno .r-main{padding:40px 34px;}
+  .tpl-moderno .r-name{font-size:21px; font-weight:700; line-height:1.25; margin:0 0 6px;}
+  .tpl-moderno .r-role{font-size:12px; color:#9FB3D9; text-transform:uppercase; letter-spacing:1px; margin-bottom:22px;}
+  .tpl-moderno .side-title{font-size:10.5px; letter-spacing:2px; text-transform:uppercase; color:#7FA0DC; margin:20px 0 10px;}
+  .tpl-moderno .side-title:first-of-type{margin-top:0;}
+  .tpl-moderno .r-contact{display:flex; flex-direction:column; gap:6px; font-size:11.5px; color:#D7DEEC; word-break:break-word;}
+  .tpl-moderno .r-skills{display:flex; flex-direction:column; gap:6px;}
+  .tpl-moderno .r-skill{font-size:11.5px; color:#D7DEEC; padding-left:12px; position:relative;}
+  .tpl-moderno .r-skill::before{content:"▸"; position:absolute; left:0; color:#7FA0DC;}
+  .tpl-moderno .r-edu-item{font-size:11.5px; color:#D7DEEC; margin-bottom:10px;}
+  .tpl-moderno .r-edu-item b{display:block; color:#fff; font-size:12px;}
+  .tpl-moderno .r-edu-item small{color:#9FB3D9;}
+  .tpl-moderno h2{
+    font-size:12px; letter-spacing:1.5px; text-transform:uppercase;
+    color:#1E2A4A; border-bottom:2px solid #1E2A4A; padding-bottom:6px; margin:22px 0 12px;
+  }
+  .tpl-moderno h2:first-of-type{margin-top:0;}
+  .tpl-moderno .r-summary{font-size:13px; line-height:1.6; color:#3A3F4B;}
+  .tpl-moderno .r-item{margin-bottom:14px;}
+  .tpl-moderno .r-item-head{display:flex; justify-content:space-between; align-items:baseline; gap:10px;}
+  .tpl-moderno .r-item-title{font-weight:600; font-size:13.5px; color:#1E2A4A;}
+  .tpl-moderno .r-item-period{font-size:10.5px; color:#8A8F9C; white-space:nowrap;}
+  .tpl-moderno .r-item-sub{font-size:12px; color:#5C6472; margin-bottom:4px;}
+  .tpl-moderno .r-item-desc{font-size:12.5px; line-height:1.55; color:#3A3F4B;}
+ 
+  /* === TEMPLATE 4: Minimalista (ATS-friendly) === */
+  #paper.tpl-minimalista{
+    padding:50px 56px;
+    font-family:Arial, Helvetica, sans-serif;
+    color:#111;
+  }
+  .tpl-minimalista .r-name{font-size:22px; font-weight:700; margin:0 0 2px;}
+  .tpl-minimalista .r-role{font-size:13px; color:#333; margin-bottom:10px;}
+  .tpl-minimalista .r-contact{font-size:12px; color:#333; display:flex; flex-wrap:wrap; gap:2px 14px; margin-bottom:20px;}
+  .tpl-minimalista h2{font-size:12.5px; text-transform:uppercase; letter-spacing:.5px; margin:20px 0 8px; color:#111; border-bottom:1px solid #999; padding-bottom:4px;}
+  .tpl-minimalista h2:first-of-type{margin-top:0;}
+  .tpl-minimalista .r-summary{font-size:13px; line-height:1.6; color:#222;}
+  .tpl-minimalista .r-item{margin-bottom:12px;}
+  .tpl-minimalista .r-item-head{display:flex; justify-content:space-between; gap:10px;}
+  .tpl-minimalista .r-item-title{font-weight:700; font-size:13px;}
+  .tpl-minimalista .r-item-period{font-size:12px; color:#333;}
+  .tpl-minimalista .r-item-sub{font-size:12.5px; color:#333; margin-bottom:3px;}
+  .tpl-minimalista .r-item-desc{font-size:12.5px; line-height:1.55; color:#222;}
+  .tpl-minimalista .r-skills{font-size:13px; color:#222; line-height:1.7;}
+ 
+  .actions{
+    margin-top:26px;
+    display:flex;
+    gap:12px;
+    width:100%;
+    max-width:620px;
+  }
+  .btn-primary{
+    background:var(--ribbon);
+    border:1px solid var(--ribbon-dark);
+    color:#FBFAF5;
+  }
+  .btn-primary:hover{background:#c74545; border-color:var(--ribbon-dark);}
+ 
+  @media print{
+    .topbar, .form-side, .actions, .tpl-picker, .ad-slot{display:none !important;}
+    .preview-side{padding:0; position:static; background:none;}
+    .layout{display:block;}
+    .paper-wrap{max-width:100%;}
+    .paper-wrap #paper{
+      box-shadow:none;
+      transform:none;
+      min-height:auto;
+    }
+    body{background:white;}
+  }
+</style>
+</head>
+<body>
+ 
+<div class="topbar">
+  <div class="brand">
+    <span class="mark">Datilo</span>
+    <span class="sub">Gerador de currículos</span>
+  </div>
+  <div class="counter">folha <b id="charCount">0</b> caracteres datilografados</div>
+</div>
+ 
+<!-- Espaço de anúncio: topo (formato leaderboard 728x90) -->
+<div class="ad-slot ad-slot--leaderboard">
+  <div>
+    <span>Espaço de anúncio · 728×90</span>
+    <small>Substituir por &lt;ins class="adsbygoogle"&gt; do AdSense</small>
+  </div>
+</div>
+ 
+<div class="layout">
+ 
+  <!-- FORM -->
+  <div class="form-side">
+    <div class="form-side-inner">
+ 
+    <div class="section-title">01 — Identificação</div>
+    <div class="field">
+      <label>Nome completo</label>
+      <input type="text" id="f-name" placeholder="Ex: Maria Oliveira Souza">
+    </div>
+    <div class="field">
+      <label>Cargo desejado</label>
+      <input type="text" id="f-role" placeholder="Ex: Analista de Marketing">
+    </div>
+    <div class="row2">
+      <div class="field">
+        <label>E-mail</label>
+        <input type="email" id="f-email" placeholder="voce@email.com">
+      </div>
+      <div class="field">
+        <label>Telefone</label>
+        <input type="tel" id="f-phone" placeholder="(00) 00000-0000">
+      </div>
+    </div>
+    <div class="row2">
+      <div class="field">
+        <label>Cidade / UF</label>
+        <input type="text" id="f-city" placeholder="Ex: Camaçari, BA">
+      </div>
+      <div class="field">
+        <label>LinkedIn (opcional)</label>
+        <input type="text" id="f-linkedin" placeholder="linkedin.com/in/seunome">
+      </div>
+    </div>
+ 
+    <div class="section-title">02 — Resumo profissional</div>
+    <div class="field">
+      <label>Um parágrafo curto sobre você</label>
+      <textarea id="f-summary" placeholder="Ex: Profissional com 5 anos de experiência em marketing digital, especializada em gestão de redes sociais e campanhas de tráfego pago."></textarea>
+    </div>
+ 
+    <div class="section-title">03 — Experiência profissional</div>
+    <div id="exp-list"></div>
+    <button class="key-btn add" onclick="addExperience()">+ adicionar experiência</button>
+ 
+    <!-- Espaço de anúncio: meio do formulário (formato retângulo) -->
+    <div class="ad-slot ad-slot--rect">
+      <div>
+        <span>Espaço de anúncio · 300×250</span>
+        <small>Substituir por &lt;ins class="adsbygoogle"&gt; do AdSense</small>
+      </div>
+    </div>
+ 
+    <div class="section-title">04 — Formação acadêmica</div>
+    <div id="edu-list"></div>
+    <button class="key-btn add" onclick="addEducation()">+ adicionar formação</button>
+ 
+    <div class="section-title">05 — Habilidades</div>
+    <div class="field">
+      <label>Separadas por vírgula</label>
+      <input type="text" id="f-skills" placeholder="Ex: Excel, Gestão de projetos, Inglês avançado">
+      <div class="skills-hint">Cada item vira uma etiqueta no currículo.</div>
+    </div>
+ 
+    </div>
+  </div>
+ 
+  <!-- PREVIEW -->
+  <div class="preview-side">
+ 
+    <div class="tpl-picker" id="tpl-picker">
+      <button class="tpl-btn active" data-tpl="typewriter" onclick="setTemplate('typewriter')">
+        <b>Datilo</b><span>Criativo · marketing/design</span>
+      </button>
+      <button class="tpl-btn" data-tpl="classico" onclick="setTemplate('classico')">
+        <b>Clássico</b><span>Formal · jurídico/bancário</span>
+      </button>
+      <button class="tpl-btn" data-tpl="moderno" onclick="setTemplate('moderno')">
+        <b>Moderno</b><span>Colorido · tech/startups</span>
+      </button>
+      <button class="tpl-btn" data-tpl="minimalista" onclick="setTemplate('minimalista')">
+        <b>Minimalista</b><span>Compatível com sistemas ATS</span>
+      </button>
+    </div>
+ 
+    <div class="paper-wrap">
+      <div id="paper" class="tpl-typewriter"></div>
+    </div>
+ 
+    <!-- Espaço de anúncio: abaixo do currículo -->
+    <div class="ad-slot ad-slot--inline">
+      <div>
+        <span>Espaço de anúncio · nativo/in-content</span>
+        <small>Substituir por &lt;ins class="adsbygoogle"&gt; do AdSense</small>
+      </div>
+    </div>
+ 
+    <div class="actions">
+      <button class="key-btn btn-primary" onclick="window.print()">Baixar em PDF</button>
+      <button class="key-btn" onclick="fillSample()">Ver exemplo preenchido</button>
+    </div>
+  </div>
+ 
+</div>
+ 
+<script>
+let expCount = 0;
+let eduCount = 0;
+let currentTemplate = 'typewriter';
+ 
+function setTemplate(tpl){
+  currentTemplate = tpl;
+  document.getElementById('paper').className = 'tpl-' + tpl;
+  document.querySelectorAll('.tpl-btn').forEach(b=>{
+    b.classList.toggle('active', b.dataset.tpl === tpl);
+  });
+  render();
+}
+ 
+function addExperience(data){
+  expCount++;
+  const id = 'exp-' + expCount;
+  const el = document.createElement('div');
+  el.className = 'entry-card';
+  el.id = id;
+  el.innerHTML = `
+    <button class="entry-remove" onclick="document.getElementById('${id}').remove(); render();">✕</button>
+    <div class="field">
+      <label>Cargo</label>
+      <input type="text" class="exp-title" placeholder="Ex: Analista de Marketing Jr." oninput="render()">
+    </div>
+    <div class="field">
+      <label>Empresa</label>
+      <input type="text" class="exp-company" placeholder="Ex: Empresa XYZ" oninput="render()">
+    </div>
+    <div class="field">
+      <label>Período</label>
+      <input type="text" class="exp-period" placeholder="Ex: Jan 2022 — Atual" oninput="render()">
+    </div>
+    <div class="field">
+      <label>Descrição das atividades</label>
+      <textarea class="exp-desc" placeholder="Ex: Responsável pelo planejamento e execução de campanhas..." oninput="render()"></textarea>
+    </div>
+  `;
+  document.getElementById('exp-list').appendChild(el);
+  if(data){
+    el.querySelector('.exp-title').value = data.title;
+    el.querySelector('.exp-company').value = data.company;
+    el.querySelector('.exp-period').value = data.period;
+    el.querySelector('.exp-desc').value = data.desc;
+  }
+  render();
+}
+ 
+function addEducation(data){
+  eduCount++;
+  const id = 'edu-' + eduCount;
+  const el = document.createElement('div');
+  el.className = 'entry-card';
+  el.id = id;
+  el.innerHTML = `
+    <button class="entry-remove" onclick="document.getElementById('${id}').remove(); render();">✕</button>
+    <div class="field">
+      <label>Curso</label>
+      <input type="text" class="edu-course" placeholder="Ex: Graduação em Administração" oninput="render()">
+    </div>
+    <div class="field">
+      <label>Instituição</label>
+      <input type="text" class="edu-school" placeholder="Ex: Universidade Federal" oninput="render()">
+    </div>
+    <div class="field">
+      <label>Período</label>
+      <input type="text" class="edu-period" placeholder="Ex: 2019 — 2023" oninput="render()">
+    </div>
+  `;
+  document.getElementById('edu-list').appendChild(el);
+  if(data){
+    el.querySelector('.edu-course').value = data.course;
+    el.querySelector('.edu-school').value = data.school;
+    el.querySelector('.edu-period').value = data.period;
+  }
+  render();
+}
+ 
+function esc(s){
+  const d = document.createElement('div');
+  d.innerText = s || '';
+  return d.innerHTML;
+}
+ 
+function getData(){
+  const name = document.getElementById('f-name').value || 'Seu Nome Aqui';
+  const role = document.getElementById('f-role').value;
+  const email = document.getElementById('f-email').value;
+  const phone = document.getElementById('f-phone').value;
+  const city = document.getElementById('f-city').value;
+  const linkedin = document.getElementById('f-linkedin').value;
+  const summary = document.getElementById('f-summary').value;
+  const skills = document.getElementById('f-skills').value
+    .split(',').map(s=>s.trim()).filter(Boolean);
+  const contactBits = [email, phone, city, linkedin].filter(Boolean);
+ 
+  const expCards = [...document.querySelectorAll('#exp-list .entry-card')].map(c=>({
+    title: c.querySelector('.exp-title').value,
+    company: c.querySelector('.exp-company').value,
+    period: c.querySelector('.exp-period').value,
+    desc: c.querySelector('.exp-desc').value
+  })).filter(e=>e.title||e.company||e.desc);
+ 
+  const eduCards = [...document.querySelectorAll('#edu-list .entry-card')].map(c=>({
+    course: c.querySelector('.edu-course').value,
+    school: c.querySelector('.edu-school').value,
+    period: c.querySelector('.edu-period').value
+  })).filter(e=>e.course||e.school);
+ 
+  return {name, role, contactBits, summary, skills, expCards, eduCards};
+}
+ 
+function renderExpBlock(d, cls){
+  let html = `<h2>Experiência</h2>`;
+  if(d.expCards.length){
+    d.expCards.forEach(e=>{
+      html += `<div class="r-item">
+        <div class="r-item-head">
+          <div class="r-item-title">${esc(e.title)}</div>
+          <div class="r-item-period">${esc(e.period)}</div>
+        </div>
+        <div class="r-item-sub">${esc(e.company)}</div>
+        <div class="r-item-desc">${esc(e.desc)}</div>
+      </div>`;
+    });
+  } else {
+    html += `<div class="r-empty">Adicione suas experiências profissionais.</div>`;
+  }
+  return html;
+}
+ 
+function renderStandard(d){
+  // used by typewriter, classico, minimalista (single column)
+  let html = `<div class="r-name">${esc(d.name)}</div>`;
+  if(d.role) html += `<div class="r-role">${esc(d.role)}</div>`;
+  html += `<div class="r-contact">${d.contactBits.length ? d.contactBits.map(esc).join('<span>·</span>') : ''}</div>`;
+ 
+  html += `<h2>Resumo</h2>`;
+  html += d.summary ? `<div class="r-summary">${esc(d.summary)}</div>` : `<div class="r-empty">Escreva um breve resumo sobre sua trajetória.</div>`;
+ 
+  html += renderExpBlock(d);
+ 
+  html += `<h2>Formação</h2>`;
+  if(d.eduCards.length){
+    d.eduCards.forEach(e=>{
+      html += `<div class="r-item">
+        <div class="r-item-head">
+          <div class="r-item-title">${esc(e.course)}</div>
+          <div class="r-item-period">${esc(e.period)}</div>
+        </div>
+        <div class="r-item-sub">${esc(e.school)}</div>
+      </div>`;
+    });
+  } else {
+    html += `<div class="r-empty">Adicione sua formação acadêmica.</div>`;
+  }
+ 
+  html += `<h2>Habilidades</h2>`;
+  if(d.skills.length){
+    html += `<div class="r-skills">${d.skills.map(s=>`<span class="r-skill">${esc(s)}</span>`).join('')}</div>`;
+  } else {
+    html += `<div class="r-empty">Liste suas principais habilidades.</div>`;
+  }
+  return html;
+}
+ 
+function renderModerno(d){
+  let side = `<div class="r-name">${esc(d.name)}</div>`;
+  if(d.role) side += `<div class="r-role">${esc(d.role)}</div>`;
+ 
+  side += `<div class="side-title">Contato</div>`;
+  side += `<div class="r-contact">${d.contactBits.length ? d.contactBits.map(c=>`<span>${esc(c)}</span>`).join('') : '<span class="r-empty" style="color:#9FB3D9">—</span>'}</div>`;
+ 
+  side += `<div class="side-title">Formação</div>`;
+  if(d.eduCards.length){
+    d.eduCards.forEach(e=>{
+      side += `<div class="r-edu-item"><b>${esc(e.course)}</b>${esc(e.school)}<br><small>${esc(e.period)}</small></div>`;
+    });
+  } else {
+    side += `<div class="r-empty" style="color:#9FB3D9">Adicione sua formação.</div>`;
+  }
+ 
+  side += `<div class="side-title">Habilidades</div>`;
+  if(d.skills.length){
+    side += `<div class="r-skills">${d.skills.map(s=>`<div class="r-skill">${esc(s)}</div>`).join('')}</div>`;
+  } else {
+    side += `<div class="r-empty" style="color:#9FB3D9">Liste suas habilidades.</div>`;
+  }
+ 
+  let main = `<h2>Resumo</h2>`;
+  main += d.summary ? `<div class="r-summary">${esc(d.summary)}</div>` : `<div class="r-empty">Escreva um breve resumo.</div>`;
+  main += renderExpBlock(d);
+ 
+  return `<div class="r-side">${side}</div><div class="r-main">${main}</div>`;
+}
+ 
+function render(){
+  const d = getData();
+  const paper = document.getElementById('paper');
+  paper.innerHTML = currentTemplate === 'moderno' ? renderModerno(d) : renderStandard(d);
+  document.getElementById('charCount').innerText = paper.innerText.length;
+}
+ 
+function fillSample(){
+  document.getElementById('f-name').value = 'Ana Beatriz Ferreira';
+  document.getElementById('f-role').value = 'Analista de Marketing Digital';
+  document.getElementById('f-email').value = 'ana.ferreira@email.com';
+  document.getElementById('f-phone').value = '(71) 99876-5432';
+  document.getElementById('f-city').value = 'Camaçari, BA';
+  document.getElementById('f-linkedin').value = 'linkedin.com/in/anabferreira';
+  document.getElementById('f-summary').value = 'Profissional com 5 anos de experiência em marketing digital, especializada em gestão de redes sociais, SEO e campanhas de tráfego pago. Foco em resultados mensuráveis e crescimento orgânico de marcas.';
+ 
+  document.getElementById('exp-list').innerHTML = '';
+  document.getElementById('edu-list').innerHTML = '';
+  expCount = 0; eduCount = 0;
+ 
+  addExperience({title:'Analista de Marketing Pleno', company:'Agência Criativa Ltda.', period:'Mar 2022 — Atual', desc:'Planejamento e execução de campanhas de mídia paga, aumento de 40% no engajamento das redes sociais em 12 meses.'});
+  addExperience({title:'Assistente de Marketing', company:'Comércio Nordeste S.A.', period:'Jan 2020 — Fev 2022', desc:'Apoio na criação de conteúdo, análise de métricas e relacionamento com influenciadores locais.'});
+ 
+  addEducation({course:'Graduação em Publicidade e Propaganda', school:'Universidade Federal da Bahia', period:'2016 — 2020'});
+ 
+  document.getElementById('f-skills').value = 'Google Ads, Meta Ads, SEO, Canva, Excel, Copywriting';
+ 
+  render();
+}
+ 
+// init with one empty experience and education card
+addExperience();
+addEducation();
+render();
+ 
+['f-name','f-role','f-email','f-phone','f-city','f-linkedin','f-summary','f-skills'].forEach(id=>{
+  document.getElementById(id).addEventListener('input', render);
+});
+</script>
+ 
+</body>
+</html>
